@@ -5,6 +5,7 @@ const path = require('path');
 const middleware = require('../src/middleware');
 const controller = require('./controller');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const { connectDB } = require('./utils/db');
 const errorHandler = require('./utils/error_handler');
 const dotenv = require('dotenv');
@@ -15,6 +16,7 @@ connectDB();
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors({ origin: true }));
 app.use('/app', controller);
 
 app.use(errorHandler);
