@@ -1,0 +1,505 @@
+openapi: 3.0.0
+servers:
+  - url: http://localhost:3000/app
+info:
+  title: Node Todo Backend Tutorial
+  version: 0.1.9
+paths:
+  /echo/echo_get:
+    get:
+      summary: Get with default request
+      description: Returns a echo message.
+      tags:
+        - /echo
+      responses:
+        '200':
+          description: Json object with message key and value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /echo/echo_qs:
+    get:
+      summary: Get with query string
+      description: Returns a echo query string from url.
+      tags:
+        - /echo
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: Query String
+          example: book
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Query String
+          example: 2
+      responses:
+        '200':
+          description: Json object with query key and value
+
+  /echo/echo_params/{params}:
+    get:
+      summary: Get with request params
+      description: Returns a params.
+      tags:
+        - /echo
+      parameters:
+        - in: path
+          name: params
+          required: true
+          schema:
+            type: integer
+          description: params on path
+          example: 10
+      responses:
+        '200':
+          description: Json object with params value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  params:
+                    type: integer
+
+  /echo/echo_post:
+    post:
+      summary: Post with request body
+      description: Returns a request body.
+      consumes:
+        - application/json
+      tags:
+        - /echo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: interger
+                  example: 1
+                name:
+                  type: string
+                  example: 'elon musk'
+      responses:
+        '200':
+          description: Json object with the same request body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+
+  /todos/no_auth/:
+    get:
+      summary: Get all todos
+      description: Returns response with todos data.
+      tags:
+        - /todo (no auth)
+      responses:
+        '200':
+          description: JSON response todos data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Todo'
+    post:
+      summary: Post todo data
+      description: Create todo and return response todo back.
+      tags:
+        - /todo (no auth)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: 'Day 1 work!'
+      responses:
+        '201':
+          description: Create Todo complete and return response with created todo.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Todo'
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: Invalid title (empty,null,undefined)
+
+  /todos/no_auth/{_id}:
+    get:
+      summary: Get single todo
+      description: Returns response with todo data.
+      tags:
+        - /todo (no auth)
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: params on path
+          example: 60a4d13c33566fe49db63dba
+      responses:
+        '200':
+          description: JSON response single todo data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Todo'
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: 'Mongo Cast Error (Invalid ObjectID)'
+        '400_2':
+          description: 'Todo not found'
+    put:
+      summary: Update Todo
+      description: Update Todo and returns response with updated todo.
+      tags:
+        - /todo (no auth)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: 'Day 10 work!'
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: params on path
+          example: 60a4d13c33566fe49db63dba
+      responses:
+        '200':
+          description: JSON response updated todo data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Todo'
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: 'Mongo Cast Error (Invalid ObjectID)'
+        '400_2':
+          description: 'Todo not found'
+        '400_3':
+          description: 'Invalid Title'
+    delete:
+      summary: Delete Todo
+      description: Delete Todo and returns delete status.
+      tags:
+        - /todo (no auth)
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: params on path
+          example: 60a4d13c33566fe49db63dba
+      responses:
+        '200':
+          description: JSON response updated todo data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: 'Mongo Cast Error (Invalid ObjectID)'
+        '400_2':
+          description: 'Todo not found'
+
+  /auth/register:
+    post:
+      summary: Post user register
+      description: Register user and return user token.
+      tags:
+        - /auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'TEST_USER'
+                email:
+                  type: string
+                  example: 'test@hotmail.com'
+                password:
+                  type: string
+                  example: 'test1234'
+      responses:
+        '200':
+          description: Json object with message key and value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: 'Invalid name or email or password'
+        '400_2':
+          description: 'User is already exist'
+        '400_3':
+          description: 'Token is invalid'
+
+  /auth/login:
+    post:
+      summary: Post user login
+      description: Login user and return user token.
+      tags:
+        - /auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: 'test@hotmail.com'
+                password:
+                  type: string
+                  example: 'test1234'
+      responses:
+        '200':
+          description: Json object with message key and value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: 'Empty email or password'
+        '400_2':
+          description: 'Token is invalid'
+        '401_1':
+          description: 'Email is invalid'
+        '401_2':
+          description: 'Password is invalid'
+
+  /todos:
+    post:
+      security:
+        - bearerAuth: []
+      summary: Post todo data
+      description: Create todo and return response todo back.
+      tags:
+        - /todo (auth)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: 'Day 1 work!'
+      responses:
+        '201':
+          description: Create Todo complete and return response with created todo.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Todo'
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: 'Title not found'
+        '401':
+          description: 'Unauthorize (token invalid)'
+
+  /todos/{_id}:
+    put:
+      security:
+        - bearerAuth: []
+      summary: Update Todo
+      description: Update Todo and returns response with updated todo.
+      tags:
+        - /todo (auth)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: 'Day 10 work!'
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: params on path
+          example: 60a4d13c33566fe49db63dba
+      responses:
+        '200':
+          description: JSON response updated todo data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Todo'
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: 'Mongo Cast Error (Invalid ObjectID)'
+        '400_2':
+          description: 'Todo not found'
+        '401':
+          description: 'Unauthorize (token invalid)'
+
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete Todo
+      description: Delete Todo and returns delete status.
+      tags:
+        - /todo (auth)
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: params on path
+          example: 60a4d13c33566fe49db63dba
+      responses:
+        '200':
+          description: JSON response updated todo data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/400aa'
+        '400_1':
+          description: 'Mongo Cast Error (Invalid ObjectID)'
+        '400_2':
+          description: 'Todo not found'
+        '401':
+          description: 'Unauthorize (token invalid)'
+
+components:
+  schemas:
+    User:
+      description: 'This is additional description.'
+  responses:
+    400aa:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              data:
+                type: object
+            required:
+              - error
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: /echo
+    description: 'Echo route for test server response by default, params, query and reqeust body.'
+  - name: /todo (no auth)
+    description: 'Todo route for todo CRUD Rest API without authentication.'
+  - name: /auth
+    description: 'Auth route for user authentication(Register, Login and Logout).'
+  - name: /todo (auth)
+    description: 'Todo route for todo CRUD Rest API with authentication.'

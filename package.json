@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^9.0.2",
+    "express-async-errors": "^3.1.1",
+    "glob": "^7.1.6",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "mongoose-schema-jsonschema": "^1.4.6",
+    "scrypt-nonce-wrapper": "^1.1.0",
+    "swagger-ui-express": "^4.1.6",
+    "yamljs": "^0.3.0"
+  },
+  "scripts": {
+    "start": "nodemon -e js,yaml spec/app.js"
+  },
+  "name": "hnk-mean-swagger",
+  "version": "1.1.1",
+  "main": "src/middleware.js",
+  "repository": "git@github.com:heartnetkung/hnk-mean-swagger.git",
+  "author": "heartnetkung <heartnetkung@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "express": "^4.17.1",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.7",
+    "nodemon": "^2.0.7"
+  }
+}
