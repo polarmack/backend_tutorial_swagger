@@ -104,7 +104,7 @@ paths:
                   name:
                     type: string
 
-  /todos/no_auth/:
+  /no_auth/todos/:
     get:
       summary: Get all todos
       description: Returns response with todos data.
@@ -159,7 +159,7 @@ paths:
         '400_1':
           description: Invalid title (empty,null,undefined)
 
-  /todos/no_auth/{_id}:
+  /no_auth/todos/{_id}:
     get:
       summary: Get single todo
       description: Returns response with todo data.
@@ -351,7 +351,32 @@ paths:
         '401_2':
           description: 'Password is invalid'
 
-  /todos:
+  /auth/logout:
+    post:
+      summary: Post user logout
+      description: Logout user and return user data
+      tags:
+        - /auth
+      responses:
+        '200':
+          description: JSON object with success and user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400aa'
+        '401_1':
+          description: Unauthorize (token invalid)
+        '401_2':
+          description: User not found (user invalid)
+
+  /with_auth/todos/:
     post:
       security:
         - bearerAuth: []
@@ -388,7 +413,7 @@ paths:
         '401':
           description: 'Unauthorize (token invalid)'
 
-  /todos/{_id}:
+  /with_auth/todos/{_id}:
     put:
       security:
         - bearerAuth: []

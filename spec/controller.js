@@ -25,7 +25,7 @@ router.post('/echo/echo_post', (req, res) => {
   res.json({ ...body });
 });
 
-router.get('/todos/no_auth/', async (req, res) => {
+router.get('/no_auth/todos/', async (req, res) => {
   let query;
 
   const reqQuery = { ...req.query };
@@ -68,7 +68,7 @@ router.get('/todos/no_auth/', async (req, res) => {
   res.json({ succes: true, count: todos.length, data: todos });
 });
 
-router.get('/todos/no_auth/:id', async (req, res) => {
+router.get('/no_auth/todos/:id', async (req, res) => {
   const todo = await Todo.findById(req.params.id);
 
   if (!todo) {
@@ -81,13 +81,13 @@ router.get('/todos/no_auth/:id', async (req, res) => {
   res.json({ succes: true, data: todo });
 });
 
-router.post('/todos/no_auth/', async (req, res) => {
+router.post('/no_auth/todos/', async (req, res) => {
   const todo = await Todo.create(req.body);
 
   res.json({ succes: true, data: todo });
 });
 
-router.put('/todos/no_auth/:id', async (req, res) => {
+router.put('/no_auth/todos/:id', async (req, res) => {
   const updateTodo = await Todo.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -103,7 +103,7 @@ router.put('/todos/no_auth/:id', async (req, res) => {
   res.json({ succes: true, data: updateTodo });
 });
 
-router.delete('/todos/no_auth/:id', async (req, res) => {
+router.delete('/no_auth/todos/:id', async (req, res) => {
   const todo = await Todo.findByIdAndDelete(req.params.id);
 
   if (!todo) {
@@ -169,13 +169,21 @@ router.post('/auth/login', async (req, res) => {
   res.status(200).cookie('token', token).json({ success: true, token });
 });
 
-router.post('/todos', tokenHandler, async (req, res) => {
+router.post('/auth/logout', tokenHandler, async (req, res) => {
+  let user = req.user;
+
+  if (!user) return res.status(401).json({ error: 'invalid user', data: {} });
+
+  res.status(200).clearCookie('token').json({ success: true, data: user });
+});
+
+router.post('/with_auth/todos', tokenHandler, async (req, res) => {
   const todo = await Todo.create(req.body);
 
   res.json({ succes: true, data: todo });
 });
 
-router.put('/todos/:id', tokenHandler, async (req, res) => {
+router.put('/with_auth/todos/:id', tokenHandler, async (req, res) => {
   const updateTodo = await Todo.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -191,7 +199,7 @@ router.put('/todos/:id', tokenHandler, async (req, res) => {
   res.json({ succes: true, data: updateTodo });
 });
 
-router.delete('/todos/:id', tokenHandler, async (req, res) => {
+router.delete('/with_auth/todos/:id', tokenHandler, async (req, res) => {
   const todo = await Todo.findByIdAndDelete(req.params.id);
 
   if (!todo) {
